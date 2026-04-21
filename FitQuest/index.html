@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitQuest — Gamificação de Treinos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ═══════════════════════════════════════ HERO BAR ═══ -->
+  <div class="hero-bar">
+    <div class="avatar" id="avatarEl">⚔️<span class="lvl-badge" id="lvlBadge">1</span></div>
+    <div>
+      <div class="hero-name" id="heroName">Aventureiro</div>
+      <div class="hero-class" id="heroClass">Guerreiro Iniciante</div>
+      <div class="xp-row">
+        <div class="bar-wrap"><div class="bar-fill bar-xp" id="xpBar" style="width:0%"></div></div>
+        <span class="bar-label" id="xpLabel">0 / 200 XP</span>
+      </div>
+    </div>
+    <div style="text-align:right;min-width:70px">
+      <div class="hero-coins">🪙 <span id="coins">0</span></div>
+      <div style="font-size:11px;color:var(--c-muted);margin-top:4px">Moedas</div>
+      <div style="font-size:11px;color:var(--c-green-hp);font-weight:600;margin-top:2px" id="hpDisplay">HP 100/100</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ TABS ═══ -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('personagem')">⚔️ Personagem</button>
+    <button class="tab" onclick="switchTab('missoes')">📋 Missões</button>
+    <button class="tab" onclick="switchTab('chefao')">💀 Chefão</button>
+    <button class="tab" onclick="switchTab('treinador')">🤖 Treinador IA</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════ PERSONAGEM ═══ -->
+  <div id="tab-personagem" class="panel active">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Atributos do Herói</span>
+        <span class="badge badge-gold" id="charClass">Guerreiro</span>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-icon">💪</div><div class="stat-val" id="strVal">10</div><div class="stat-lbl">Força</div></div>
+        <div class="stat-box"><div class="stat-icon">🫀</div><div class="stat-val" id="endVal">10</div><div class="stat-lbl">Resistência</div></div>
+        <div class="stat-box"><div class="stat-icon">⚡</div><div class="stat-val" id="agiVal">10</div><div class="stat-lbl">Agilidade</div></div>
+      </div>
+      <hr class="section-sep" style="margin:10px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-size:12px;color:var(--c-muted);font-weight:600">PONTOS DE VIDA</span>
+        <span style="font-size:12px;font-weight:700;color:var(--c-green-hp)" id="hpFull">100 / 100</span>
+      </div>
+      <div class="bar-wrap" style="height:10px"><div class="bar-fill bar-hp" id="hpBarEl" style="width:100%"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">GPS &amp; Check-in</span>
+        <span id="gpsBadge" class="badge badge-red">Inativo</span>
+      </div>
+      <div class="gps-zone" id="gpsZone">
+        <div style="font-size:13px;color:var(--c-muted);margin-bottom:10px">Faça check-in na academia para liberar missões especiais!</div>
+        <button class="btn btn-outline" id="gpsBtn" onclick="simulateGPS()">📍 Fazer Check-in</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Pedômetro Diário</span>
+        <span class="badge badge-blue">XP Passivo</span>
+      </div>
+      <div class="step-counter" id="stepCount">0</div>
+      <div class="step-sub">passos hoje</div>
+      <div class="bar-wrap" style="height:8px;margin:8px 0">
+        <div class="bar-fill" id="stepBar" style="width:0%;background:var(--c-blue-mp)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--c-muted)">
+        <span>0</span><span>Meta: 10.000 passos</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Série Semanal</span>
+        <span class="badge badge-purple" id="streakBadge">0 dias</span>
+      </div>
+      <div class="weekly-grid" id="weekGrid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">Equipamentos</span></div>
+      <div class="equip-grid">
+        <div class="equip-slot" id="eq0" onclick="equipItem(0)">
+          <div class="equip-icon">🗡️</div>
+          <div class="equip-name">Espada Básica</div>
+          <div class="equip-stat">+5 Força</div>
+        </div>
+        <div class="equip-slot" id="eq1" onclick="equipItem(1)">
+          <div class="equip-icon">🛡️</div>
+          <div class="equip-name">Escudo de Madeira</div>
+          <div class="equip-stat">+5 Resistência</div>
+        </div>
+        <div class="equip-slot locked" id="eq2">
+          <div class="equip-icon">🏹</div>
+          <div class="equip-name">Arco Mágico</div>
+          <div class="equip-stat" style="color:var(--c-muted)">Nível 5+</div>
+        </div>
+        <div class="equip-slot locked" id="eq3">
+          <div class="equip-icon">🧿</div>
+          <div class="equip-name">Amuleto Lendário</div>
+          <div class="equip-stat" style="color:var(--c-muted)">Nível 10+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ MISSÕES ═══ -->
+  <div id="tab-missoes" class="panel">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Missões Diárias</span>
+        <span class="badge badge-gold" id="missionCount">0/5</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="missionList"></div>
+    </div>
+    <div class="card" id="gymMissionCard" style="display:none">
+      <div class="card-header">
+        <span class="card-title">⭐ Missão Especial da Academia</span>
+        <span class="badge badge-purple">GPS</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="gymMissionList"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Missões Semanais</span>
+        <span class="badge badge-blue">Recorrentes</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="weeklyMissions"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ CHEFÃO ═══ -->
+  <div id="tab-chefao" class="panel">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Arena do Chefão</span>
+        <span class="badge badge-red" id="bossWeek">Semana 1</span>
+      </div>
+      <div class="boss-arena">
+        <span class="boss-icon" id="bossIcon">😴</span>
+        <div class="boss-name" id="bossName">A Preguiça</div>
+        <div class="boss-sub" id="bossSub">Chefão da Semana — derrote completando treinos!</div>
+        <div style="margin:10px 0">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--c-muted);margin-bottom:4px">
+            <span>HP do Chefão</span><span id="bossHPLabel">1000 / 1000</span>
+          </div>
+          <div class="bar-wrap" style="height:12px">
+            <div class="bar-fill bar-boss" id="bossBar" style="width:100%"></div>
+          </div>
+        </div>
+        <div class="atk-row">
+          <button class="atk-btn" onclick="attackBoss('forca')" style="border-color:var(--c-red-atk);color:var(--c-red-atk)">💪 Força<br><small>+50 dmg</small></button>
+          <button class="atk-btn" onclick="attackBoss('cardio')" style="border-color:var(--c-blue-mp);color:var(--c-blue-mp)">🏃 Cardio<br><small>+35 dmg</small></button>
+          <button class="atk-btn" onclick="attackBoss('descanso')" style="border-color:var(--c-green-hp);color:var(--c-green-hp)">💤 Descanso<br><small>+15 HP</small></button>
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <div style="font-size:11px;color:var(--c-muted);font-weight:600;margin-bottom:6px">LOG DE BATALHA</div>
+        <div class="log-area" id="battleLog"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Recompensas do Chefão</span></div>
+      <div style="display:flex;gap:8px">
+        <div class="stat-box" style="flex:1"><div class="stat-icon">🪙</div><div class="stat-val">500</div><div class="stat-lbl">Moedas</div></div>
+        <div class="stat-box" style="flex:1"><div class="stat-icon">✨</div><div class="stat-val">300</div><div class="stat-lbl">XP Bônus</div></div>
+        <div class="stat-box" style="flex:1"><div class="stat-icon">🏆</div><div class="stat-val">1</div><div class="stat-lbl">Troféu</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--c-muted);margin-top:8px;text-align:center">Derrote o chefão antes do domingo para receber as recompensas!</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ TREINADOR IA ═══ -->
+  <div id="tab-treinador" class="panel">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Mestre Zephyr — Treinador IA</span>
+        <span class="badge badge-gold">IA Ativa</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <button class="btn btn-outline" style="font-size:11px;padding:6px 10px" onclick="askTrainer('motivar')">🔥 Me motive!</button>
+        <button class="btn btn-outline" style="font-size:11px;padding:6px 10px" onclick="askTrainer('missao')">⚔️ Nova Missão</button>
+        <button class="btn btn-outline" style="font-size:11px;padding:6px 10px" onclick="askTrainer('dica')">💡 Dica de Treino</button>
+        <button class="btn btn-outline" style="font-size:11px;padding:6px 10px" onclick="askTrainer('progresso')">📊 Meu Progresso</button>
+      </div>
+      <div class="ai-chat" id="chatBox" style="max-height:280px;overflow-y:auto;padding:4px 0;gap:8px"></div>
+      <div class="input-row" style="margin-top:8px">
+        <input class="text-input" id="chatInput" placeholder="Fale com seu treinador..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn btn-gold" onclick="sendChat()">Enviar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Missões IA Geradas</span>
+        <span class="badge badge-purple">Procedural</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="aiMissions">
+        <div style="font-size:13px;color:var(--c-muted);text-align:center;padding:12px">Peça ao Treinador por novas missões!</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .app -->
+<div class="toast" id="toast"></div>
+
+<!-- Scripts — ordem importa -->
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/render.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
